@@ -11,6 +11,13 @@ samples <- c(
 
 names(samples) <- c('young', 'young', 'young', 'young', 'old', 'old', 'old', 'old')
 
+common_path <- '/cellfile/datapublic/ahyseni/cryption/m.musculus/docker/salmon_quant/output'
+
+# reading in the salmon quantification files, e.g.: /cellfile/datapublic/ahyseni/cryption/c.elegans/docker/salmon_quant/output/wt/K002000093_54873/quant.sf
+
+quant_filepaths <- file.path(common_path, samples, "quant.sf")
+
+
 sampleTable <- data.frame(
   sampleName = samples,
   fileName = quant_filepaths,
@@ -30,10 +37,10 @@ txi <- tximport(quant_filepaths, type = "salmon", tx2gene = tx2gene1, ignoreTxVe
 # Create DESeq2 dataset
 dds <- DESeqDataSetFromTximport(txi, colData = sampleTable, design = ~condition)
 
-# Remove genes with very low counts
+# remove genes with very low counts
 dds <- dds[rowSums(counts(dds)) > 5, ]
 
-# Run DESeq normalization
+# run DESeq normalization
 dds <- DESeq(dds)
 vsd <- vst(dds, blind = TRUE)
 
